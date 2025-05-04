@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>IoT Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light text-center p-5">
+  <div class="container">
+    <h1 class="mb-4">IoT Dashboard</h1>
+    
+    <div class="card p-4 shadow-sm mb-4">
+      <h3>当前温度：{{ temperature }} ℃</h3>
+      <h4>当前湿度：{{ humidity }} %</h4>
+      <h4>目标温度：{{ target_temperature }} ℃</h4>
+    </div>
+
+    <!-- 🔧 添加设定温度表单 -->
+    <div class="card p-4 shadow-sm">
+      <form action="/set-temperature" method="POST" class="d-flex flex-column align-items-center">
+        <div class="mb-3 w-100" style="max-width: 300px;">
+          <label for="target_temperature" class="form-label">设置目标温度:</label>
+          <input type="number" name="target_temperature" step="0.1" id="target_temperature" class="form-control" placeholder="输入目标温度" required>
+        </div>
+        <div>
+          <button type="submit" class="btn btn-primary">提交</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</body>
+</html>
