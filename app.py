@@ -12,7 +12,7 @@ def index():
     global target_temperature
     temperature, humidity = get_latest_data()
     return render_template('index.html', temperature=temperature, humidity=humidity, target_temperature=target_temperature)
-
+    # 将参数传入模板
 @app.route('/set-temperature', methods=['POST'])
 def set_temperature():
     global target_temperature

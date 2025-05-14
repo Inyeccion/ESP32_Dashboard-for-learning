@@ -43,7 +43,8 @@ def publish_set_temperature(temp):
         # Todo 2 开始：将目标温度转换为 JSON 格式，并发布到指定主题MQTT_SET_TOPIC
         pass
         # code here
-        client.publish(MQTT_SET_TOPIC, temp)
+        data = json.dumps({"target_temperature": temp})
+        client.publish(MQTT_SET_TOPIC, data)
         print(f"发布目标温度: {temp}")
         
         # Todo 2 结束
