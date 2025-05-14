@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, jsonify
 import os
 from mqtt_client import get_latest_data, publish_set_temperature
 
@@ -25,6 +25,15 @@ def set_temperature():
             print("无效温度输入")
     return redirect('/')
     
+@app.route('/latest-data')    #实现实时更新
+def latest_data():
+    temperature, humidity = get_latest_data()
+    return jsonify({
+        "temperature": temperature,
+        "humidity": humidity,
+        "target_temperature": target_temperature
+    })
+
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(debug=True, host='0.0.0.0', port=port)

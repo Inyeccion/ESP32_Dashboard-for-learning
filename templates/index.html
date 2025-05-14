@@ -29,5 +29,19 @@
       </form>
     </div>
   </div>
+<script>
+function updateData() {
+  fetch('/latest-data')
+    .then(response => response.json())
+    .then(data => {
+      document.querySelector('h3').textContent = `当前温度：${data.temperature} ℃`;
+      document.querySelectorAll('h4')[0].textContent = `当前湿度：${data.humidity} %`;
+      document.querySelectorAll('h4')[1].textContent = `目标温度：${data.target_temperature} ℃`;
+    });
+}
+
+// 每5秒自动刷新一次数据
+setInterval(updateData, 5000);
+</script>
 </body>
 </html>
