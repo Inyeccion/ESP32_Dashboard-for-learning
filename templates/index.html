@@ -14,6 +14,7 @@
       <h3>当前温度：{{ temperature }} ℃</h3>
       <h4>当前湿度：{{ humidity }} %</h4>
       <h4>目标温度：{{ target_temperature }} ℃</h4>
+      <h4>预测温度: {{ predicted_temp if predicted_temp is not none else '暂无预测' }}</h4>
     </div>
 
     <!-- 🔧 添加设定温度表单 -->

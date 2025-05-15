@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, redirect
 import os
-from mqtt_client import get_latest_data, publish_set_temperature
+from mqtt_client import get_latest_data, publish_set_temperature, predict_temperature, model, scaler
+import pandas as pd
+import numpy as np
 
 app = Flask(__name__)
 
@@ -11,8 +13,24 @@ target_temperature = None
 def index():
     global target_temperature
     temperature, humidity = get_latest_data()
-    return render_template('index.html', temperature=temperature, humidity=humidity, target_temperature=target_temperature)
-    # 将参数传入模板
+    # 获取预测温度
+    predicted_temp = None
+    try:
+        data = pd.read_csv("temperature_data.csv")
+        if model is not None and scaler is not None and len(data) > 10:
+            recent_data = data["temperature"].values[-10:]
+            predicted = predict_temperature(model, scaler, np.array(recent_data))
+            predicted_temp = round(float(predicted[0][0]), 2)
+    except Exception as e:
+        print("预测温度获取失败：", e)
+    return render_template(
+        'index.html',
+        temperature=temperature,
+        humidity=humidity,
+        target_temperature=target_temperature,
+        predicted_temp=predicted_temp
+    )
+
 @app.route('/set-temperature', methods=['POST'])
 def set_temperature():
     global target_temperature
