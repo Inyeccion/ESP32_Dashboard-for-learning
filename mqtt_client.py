@@ -8,12 +8,10 @@ import numpy as np
 import os
 import pandas as pd
 
-# 检查 temperature_data.csv 文件
-if not os.path.exists("temperature_data.csv") or os.path.getsize("temperature_data.csv") == 0:
-    print("temperature_data.csv 文件不存在或为空，创建一个空文件...")
-    with open("temperature_data.csv", mode="w", newline="") as file:
-        writer = csv.writer(file)
-        writer.writerow(["timestamp", "temperature"])  # 添加表头
+# 每次启动时清空 temperature_data.csv 并写入表头
+with open("temperature_data.csv", mode="w", newline="") as file:
+    writer = csv.writer(file)
+    writer.writerow(["timestamp", "temperature"])  # 添加表头
 
 # 延迟训练模型
 model, scaler = None, None
