@@ -12,8 +12,8 @@ target_temperature = None
 @app.route('/')
 def index():
     global target_temperature
-    temperature, humidity = get_latest_data()
-    # 获取预测温度
+    temperature, humidity, predicted_temp = get_latest_data()
+    # 获取预测温度   z：这段代码好像没有用，实际的预测温度调用是在消息回调函数中的
     predicted_temp = None
     try:
         data = pd.read_csv("temperature_data.csv")
@@ -21,6 +21,7 @@ def index():
             recent_data = data["temperature"].values[-10:]
             predicted = predict_temperature(model, scaler, np.array(recent_data))
             predicted_temp = round(float(predicted[0][0]), 2)
+            print("预测温度显示：",predicted_temp)
     except Exception as e:
         print("预测温度获取失败：", e)
     return render_template(
@@ -45,11 +46,14 @@ def set_temperature():
     
 @app.route('/latest-data')    #实现实时更新
 def latest_data():
-    temperature, humidity = get_latest_data()
+    temperature, humidity, predicted_temperature = get_latest_data()
+    if predicted_temperature is not None:
+        predicted_temperature = float(predicted_temperature)
     return jsonify({
         "temperature": temperature,
         "humidity": humidity,
-        "target_temperature": target_temperature
+        "target_temperature": target_temperature,
+        "predicted_temperature": predicted_temperature
     })
 
 if __name__ == '__main__':

@@ -34,7 +34,7 @@ MQTT_SET_TOPIC = "sc104/9013/set_temperature"
 # 全局变量保存最新温湿度数据
 latest_temperature = None
 latest_humidity = None
-
+predicted_temp = None
 # 当连接成功时的回调
 def on_connect(client, userdata, flags, rc):
     print("已连接到 MQTT Broker，返回码：" + str(rc))
@@ -43,7 +43,7 @@ def on_connect(client, userdata, flags, rc):
 
 # 当接收到消息时的回调
 def on_message(client, userdata, msg):
-    global latest_temperature, latest_humidity, model, scaler
+    global latest_temperature, latest_humidity, model, scaler, predicted_temp
     try:
         payload = msg.payload.decode("utf-8")
         data = json.loads(payload)
@@ -75,7 +75,15 @@ def on_message(client, userdata, msg):
 
 # Flask 可调用的接口：获取最新数据
 def get_latest_data():
-    return latest_temperature, latest_humidity
+    # 安全处理 predicted_temp 为空的情况
+    if predicted_temp is not None:
+        try:
+            pred = predicted_temp[0][0]
+        except Exception:
+            pred = None
+    else:
+        pred = None
+    return latest_temperature, latest_humidity, pred
 
 
 def publish_set_temperature(temp):
