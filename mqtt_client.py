@@ -46,9 +46,11 @@ def on_message(client, userdata, msg):
     global latest_temperature, latest_humidity, model, scaler, predicted_temp
     try:
         payload = msg.payload.decode("utf-8")
+        # Todo 1 开始：解析 JSON 数据
         data = json.loads(payload)
         latest_temperature = data["temperature"]
         latest_humidity = data["humidity"]
+        # Todo 1 结束
         print(f"收到消息:{data}")
 
         # 将温度数据存储到 CSV 文件
@@ -121,9 +123,6 @@ def predict():
         return jsonify({"predicted_temperature": predicted_temp[0][0]})
     else:
         return jsonify({"error": "数据不足，无法进行预测"})
-
-# 导出模型、scaler和预测函数
-__all__ = ['get_latest_data', 'publish_set_temperature', 'predict_temperature', 'model', 'scaler']
 
 if __name__ == "__main__":
     app.run(debug=True)

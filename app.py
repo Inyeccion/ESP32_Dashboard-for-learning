@@ -1,8 +1,6 @@
 from flask import Flask, render_template, request, redirect, jsonify
 import os
-from mqtt_client import get_latest_data, publish_set_temperature, predict_temperature, model, scaler
-import pandas as pd
-import numpy as np
+from mqtt_client import get_latest_data, publish_set_temperature
 
 app = Flask(__name__)
 
@@ -13,17 +11,6 @@ target_temperature = None
 def index():
     global target_temperature
     temperature, humidity, predicted_temp = get_latest_data()
-    # 获取预测温度   z：这段代码好像没有用，实际的预测温度调用是在消息回调函数中的
-    predicted_temp = None
-    try:
-        data = pd.read_csv("temperature_data.csv")
-        if model is not None and scaler is not None and len(data) > 10:
-            recent_data = data["temperature"].values[-10:]
-            predicted = predict_temperature(model, scaler, np.array(recent_data))
-            predicted_temp = round(float(predicted[0][0]), 2)
-            print("预测温度显示：",predicted_temp)
-    except Exception as e:
-        print("预测温度获取失败：", e)
     return render_template(
         'index.html',
         temperature=temperature,
@@ -52,7 +39,6 @@ def latest_data():
     return jsonify({
         "temperature": temperature,
         "humidity": humidity,
-        "target_temperature": target_temperature,
         "predicted_temperature": predicted_temperature
     })
 
