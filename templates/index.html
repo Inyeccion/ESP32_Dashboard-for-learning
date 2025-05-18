@@ -1,33 +1,164 @@
 <!doctype html>
-<html lang="en">
+<html lang="zh-cn">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>IoT Dashboard</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(135deg, #161b22 0%, #0d1117 100%);
+      color: #c9d1d9;
+      font-family: 'JetBrains Mono', 'Consolas', 'Menlo', 'monospace', 'Arial', sans-serif;
+      min-height: 100vh;
+    }
+    .navbar {
+      background: #161b22 !important;
+      border-bottom: 1.5px solid #30363d;
+      box-shadow: 0 2px 12px #000a;
+    }
+    .navbar-brand {
+      color: #58a6ff !important;
+      font-weight: bold;
+      letter-spacing: 2px;
+      font-size: 1.5rem;
+    }
+    .dashboard-title {
+      color: #ffa657;
+      font-weight: bold;
+      letter-spacing: 2px;
+      text-shadow: 0 2px 12px #000a;
+    }
+    .card {
+      background: rgba(22,27,34,0.98);
+      border-radius: 18px;
+      box-shadow: 0 4px 32px #000a, 0 1.5px 0 #30363d;
+      border: 1.5px solid #30363d;
+      margin-bottom: 2rem;
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+    .card:hover {
+      box-shadow: 0 8px 48px #23863655, 0 2px 0 #30363d;
+      transform: translateY(-4px) scale(1.01);
+    }
+    h1, h3, h4, h5 {
+      font-family: 'JetBrains Mono', 'Consolas', 'Menlo', 'monospace', 'Arial', sans-serif;
+    }
+    h1 {
+      color: #ffa657;
+      font-weight: bold;
+      letter-spacing: 2px;
+      text-shadow: 0 2px 12px #000a;
+    }
+    h3 {
+      color: #ffa657;
+    }
+    h4 {
+      color: #8b949e;
+    }
+    .form-label, label {
+      color: #8b949e;
+      font-size: 1.1rem;
+      font-weight: 500;
+    }
+    .btn-primary, .btn-primary:active, .btn-primary:focus {
+      background: linear-gradient(90deg, #238636 0%, #2ea043 100%);
+      color: #fff;
+      border: none;
+      font-weight: bold;
+      letter-spacing: 1px;
+      box-shadow: 0 2px 8px #23863633;
+      transition: background 0.2s, box-shadow 0.2s;
+    }
+    .btn-primary:hover {
+      background: linear-gradient(90deg, #2ea043 0%, #238636 100%);
+      color: #fff;
+      box-shadow: 0 4px 16px #23863655;
+    }
+    input, select, textarea {
+      background: #0d1117 !important;
+      color: #c9d1d9 !important;
+      border: 1.5px solid #30363d !important;
+      font-size: 1.1rem;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: #58a6ff !important;
+      box-shadow: 0 0 0 0.2rem #58a6ff33;
+    }
+    .table {
+      background: #161b22;
+      color: #c9d1d9;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .table thead {
+      background: #21262d;
+      color: #8b949e;
+    }
+    .table-striped > tbody > tr:nth-of-type(odd) {
+      background-color: #161b22;
+    }
+    .table-striped > tbody > tr:nth-of-type(even) {
+      background-color: #21262d;
+    }
+    .table th, .table td {
+      vertical-align: middle;
+      font-size: 1.05rem;
+    }
+    @media (max-width: 900px) {
+      .row { flex-direction: column; }
+    }
+  </style>
 </head>
-<body class="bg-light text-center p-5">
-  <div class="container">
-    <h1 class="mb-4">IoT Dashboard</h1>
-    
-    <div class="card p-4 shadow-sm mb-4">
-      <h3>当前温度：{{ temperature }} ℃</h3>
-      <h4>当前湿度：{{ humidity }} %</h4>
-      <h4>目标温度：{{ target_temperature }} ℃</h4>
-      <h4>预测温度: {{ predicted_temp if predicted_temp is not none else '暂无预测' }}</h4>
+<body>
+  <nav class="navbar navbar-expand-lg mb-4 shadow">
+    <div class="container">
+      <a class="navbar-brand" href="#">IoT 控制台</a>
     </div>
-
-    <!-- 🔧 添加设定温度表单 -->
-    <div class="card p-4 shadow-sm">
-      <form action="/set-temperature" method="POST" class="d-flex flex-column align-items-center">
-        <div class="mb-3 w-100" style="max-width: 300px;">
-          <label for="target_temperature" class="form-label">设置目标温度:</label>
-          <input type="number" name="target_temperature" step="0.1" id="target_temperature" class="form-control" placeholder="输入目标温度" required>
+  </nav>
+  <div class="container" style="max-width: 1200px;">
+    <h1 class="dashboard-title text-center mb-4">IoT Dashboard</h1>
+    <div class="row">
+      <!-- 左侧：温湿度显示和目标温度表单 -->
+      <div class="col-lg-4 col-md-5 col-12">
+        <div class="card p-4 shadow-sm mb-4">
+          <h3>当前温度：<span id="current-temp">{{ temperature }}</span> ℃</h3>
+          <h4>当前湿度：<span id="current-humidity">{{ humidity }}</span> %</h4>
+          <h4>目标温度：<span id="target-temp">{{ target_temperature }}</span> ℃</h4>
+          <h4>预测温度: <span id="pred-temp">{{ predicted_temp if predicted_temp is not none else '暂无预测' }}</span> ℃</h4>
         </div>
-        <div>
-          <button type="submit" class="btn btn-primary">提交</button>
+        <div class="card p-4 shadow-sm">
+          <form action="/set-temperature" method="POST" class="d-flex flex-column align-items-center">
+            <div class="mb-3 w-100" style="max-width: 300px;">
+              <label for="target_temperature" class="form-label">设置目标温度:</label>
+              <input type="number" name="target_temperature" step="0.1" id="target_temperature" class="form-control" placeholder="输入目标温度" required>
+            </div>
+            <div>
+              <button type="submit" class="btn btn-primary">提交</button>
+            </div>
+          </form>
         </div>
-      </form>
+      </div>
+      <!-- 右侧：历史数据表格 -->
+      <div class="col-lg-8 col-md-7 col-12">
+        <div class="card p-4 shadow-sm mt-4 mt-md-0">
+          <h5 style="color:#58a6ff;">历史温度数据</h5>
+          <div class="table-responsive">
+            <table class="table table-striped" id="history-table">
+              <thead>
+                <tr>
+                  <th>时间</th>
+                  <th>温度</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- 数据将由JS动态填充 -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 <script>
@@ -35,13 +166,30 @@ function updateData() {
   fetch('/latest-data')
     .then(response => response.json())
     .then(data => {
-      document.querySelector('h3').textContent = `当前温度：${data.temperature !== null ? data.temperature : '暂无温度数据'} ℃`;
-      document.querySelectorAll('h4')[0].textContent = `当前湿度：${data.humidity !== null ? data.humidity : '暂无湿度数据'} %`;   
-      document.querySelectorAll('h4')[2].textContent = `预测温度: ${data.predicted_temperature !== null ? data.predicted_temperature : '暂无预测'} ℃`;
+      document.getElementById('current-temp').textContent = data.temperature !== null ? data.temperature : '暂无温度数据';
+      document.getElementById('current-humidity').textContent = data.humidity !== null ? data.humidity : '暂无湿度数据';
+      document.getElementById('target-temp').textContent = data.target_temperature !== null ? data.target_temperature : '暂无目标温度';
+      document.getElementById('pred-temp').textContent =
+        (data.predicted_temperature !== null && !isNaN(data.predicted_temperature))
+          ? Number(data.predicted_temperature).toFixed(1)
+          : '暂无预测';
+    });
+  fetch('/history-data')
+    .then(response => response.json())
+    .then(rows => {
+      const tbody = document.querySelector('#history-table tbody');
+      tbody.innerHTML = '';
+      rows.forEach(row => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${row.timestamp}</td><td>${row.temperature}</td>`;
+        tbody.appendChild(tr);
+      });
     });
 }
 // 每5秒自动刷新一次数据
 setInterval(updateData, 5000);
+// 页面加载时立即刷新一次
+updateData();
 </script>
 
 </body>

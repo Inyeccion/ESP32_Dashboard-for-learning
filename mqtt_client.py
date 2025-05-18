@@ -107,22 +107,7 @@ client.on_connect = on_connect
 client.on_message = on_message
 client.connect(MQTT_BROKER, MQTT_PORT, 60)
 client.loop_start()  # 使用非阻塞模式以便与 Flask 共存
-
 print(f"MQTT 客户端已启动，等待来自 {MQTT_TOPIC} 的消息...")
-
-# Flask 应用
-app = Flask(__name__)
-
-@app.route("/predict", methods=["GET"])
-def predict():
-    global model, scaler
-    data = pd.read_csv("temperature_data.csv")
-    if len(data) > 10:
-        recent_data = data["temperature"].values[-10:]  # 获取最近 10 条数据
-        predicted_temp = predict_temperature(model, scaler, np.array(recent_data))
-        return jsonify({"predicted_temperature": predicted_temp[0][0]})
-    else:
-        return jsonify({"error": "数据不足，无法进行预测"})
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, jsonify
 import os
 from mqtt_client import get_latest_data, publish_set_temperature
+import pandas as pd
 
 app = Flask(__name__)
 
@@ -39,8 +40,21 @@ def latest_data():
     return jsonify({
         "temperature": temperature,
         "humidity": humidity,
+        "target_temperature": target_temperature,
         "predicted_temperature": predicted_temperature
     })
+
+@app.route('/history-data')
+def history_data():
+    try:
+        df = pd.read_csv('temperature_data.csv')
+        # 按时间降序排列
+        df = df.sort_values(by='timestamp', ascending=False)
+        # 只取最近100条数据（可根据需要调整）
+        data = df.tail(100).to_dict(orient='records')
+        return jsonify(data)
+    except Exception as e:
+        return jsonify([])
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))

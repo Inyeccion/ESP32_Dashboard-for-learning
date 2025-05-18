@@ -6,13 +6,6 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense
 from sklearn.preprocessing import MinMaxScaler
 
-# 检查并创建空的 temperature_data.csv 文件
-if not os.path.exists("temperature_data.csv") or os.path.getsize("temperature_data.csv") == 0:
-    print("temperature_data.csv 文件不存在或为空，创建一个空文件...")
-    with open("temperature_data.csv", mode="w", newline="") as file:
-        writer = csv.writer(file)
-        writer.writerow(["timestamp", "temperature"])  # 添加表头
-
 # 加载数据
 def load_data(file_path, sequence_length=10):
     # 读取 CSV 文件并跳过表头
