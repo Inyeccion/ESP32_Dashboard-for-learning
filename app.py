@@ -12,7 +12,7 @@ target_temperature = None
 def index():
     global target_temperature
     temperature, humidity, predicted_temp = get_latest_data()
-    return render_template(
+    return render_template(   # 将初始化的四个值传递给模板
         'index.html',
         temperature=temperature,
         humidity=humidity,
@@ -26,13 +26,13 @@ def set_temperature():
     target_temp = request.form.get('target_temperature')
     if target_temp:
         try:
-            target_temperature = float(target_temp)  # 更新目标温度
-            publish_set_temperature(target_temperature)
+            target_temperature = float(target_temp)  
+            publish_set_temperature(target_temperature)  # 更新目标温度
         except ValueError:
             print("无效温度输入")
     return redirect('/')
     
-@app.route('/latest-data')    #实现实时更新
+@app.route('/latest-data')    #实现实时更新  给前端提供json格式化后的最新数据
 def latest_data():
     temperature, humidity, predicted_temperature = get_latest_data()
     if predicted_temperature is not None:
@@ -44,7 +44,7 @@ def latest_data():
         "predicted_temperature": predicted_temperature
     })
 
-@app.route('/history-data')
+@app.route('/history-data')   # 实现历史数据显示  同样给前端提供json格式化后的历史数据
 def history_data():
     try:
         df = pd.read_csv('temperature_data.csv')

@@ -17,7 +17,7 @@ with open("temperature_data.csv", mode="w", newline="") as file:
 model, scaler = None, None
 if os.path.exists("temperature_data.csv") and os.path.getsize("temperature_data.csv") > 0:
     data = pd.read_csv("temperature_data.csv")
-    if len(data) > 10:  # 假设需要至少 10 条数据
+    if len(data) > 10:  # 需要至少 10 条数据
         model, scaler = train_model("temperature_data.csv")
         print("LSTM 模型已训练完成")
     else:
@@ -35,6 +35,7 @@ MQTT_SET_TOPIC = "sc104/9013/set_temperature"
 latest_temperature = None
 latest_humidity = None
 predicted_temp = None
+
 # 当连接成功时的回调
 def on_connect(client, userdata, flags, rc):
     print("已连接到 MQTT Broker，返回码：" + str(rc))
@@ -109,5 +110,4 @@ client.connect(MQTT_BROKER, MQTT_PORT, 60)
 client.loop_start()  # 使用非阻塞模式以便与 Flask 共存
 print(f"MQTT 客户端已启动，等待来自 {MQTT_TOPIC} 的消息...")
 
-if __name__ == "__main__":
-    app.run(debug=True)
+
