@@ -49,7 +49,7 @@ def history_data():
     try:
         df = pd.read_csv('temperature_data.csv')
         # 按时间降序排列
-        df = df.sort_values(by='timestamp', ascending=False)
+        df = df.sort_values(by='timestamp', ascending=True)
         # 只取最近100条数据（可根据需要调整）
         data = df.tail(100).to_dict(orient='records')
         return jsonify(data)

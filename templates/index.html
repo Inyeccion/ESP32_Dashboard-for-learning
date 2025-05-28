@@ -183,8 +183,9 @@ function formatTime(ts) {
 }
 
 function renderHistoryChart(rows) {
-  const times = rows.map(row => formatTime(row.timestamp));
-  const temps = rows.map(row => row.temperature);
+  const reversedRows = rows.slice().reverse();
+  const times = reversedRows.map(row => formatTime(row.timestamp));
+  const temps = reversedRows.map(row => row.temperature);
 
   // 动态设置y轴比例尺
   let minTemp = Math.min(...temps);
@@ -241,7 +242,7 @@ function updateData() {
     .then(rows => {
       const tbody = document.querySelector('#history-table tbody');
       tbody.innerHTML = '';
-      rows.forEach(row => {
+      rows.slice().reverse().forEach(row => {
         const tr = document.createElement('tr');
         tr.innerHTML = `<td>${formatTime(row.timestamp)}</td><td>${row.temperature}</td>`;
         tbody.appendChild(tr);
